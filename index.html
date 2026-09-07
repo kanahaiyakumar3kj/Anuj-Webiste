@@ -1,6 +1,41 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function() {
+        try {
+          var _rawFetch = window.fetch;
+          var _currentFetch = _rawFetch ? function() { return _rawFetch.apply(window, arguments); } : undefined;
+          Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            enumerable: true,
+            get: function() {
+              return _currentFetch;
+            },
+            set: function(val) {
+              _currentFetch = val;
+            }
+          });
+        } catch (e) {
+          try {
+            if (typeof Window !== 'undefined' && Window.prototype) {
+              var _protoRaw = Window.prototype.fetch;
+              var _currentProto = _protoRaw ? function() { return _protoRaw.apply(window, arguments); } : undefined;
+              Object.defineProperty(Window.prototype, 'fetch', {
+                configurable: true,
+                enumerable: true,
+                get: function() {
+                  return _currentProto;
+                },
+                set: function(val) {
+                  _currentProto = val;
+                }
+              });
+            }
+          } catch (e2) {}
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FlexiRub Polymer | Precision Rubber Profiles, Gaskets & Mouldings</title>
