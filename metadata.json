@@ -1,0 +1,7 @@
+{
+  "name": "FlexiRub Polymer",
+  "description": "Manufacturer and global supplier of precision EPDM & Silicone rubber profiles, extruded gaskets, moulded elastomeric components, and industrial polymer solutions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
