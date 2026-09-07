@@ -1,4 +1,5 @@
 {
+  // Cloudflare Pages / Workers static asset deployment configuration
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "anuj-website",
   "compatibility_date": "2026-09-07",
