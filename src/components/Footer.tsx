@@ -81,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({
             </p>
 
             <div className="space-y-1.5 text-slate-400 pt-1">
-              <div><strong>Direct Tel / WhatsApp:</strong> <a href="tel:+971551568070" className="hover:text-amber-400 font-mono text-slate-200">+971 55 156 8070</a></div>
+              <div><strong>Direct Tel / WhatsApp:</strong> <a href="tel:+919310977761" className="hover:text-amber-400 font-mono text-slate-200">+91-9310977761</a></div>
               <div><strong>Official Email:</strong> <a href="mailto:info@flexirubpolymer.com" className="hover:text-amber-400 text-slate-200">info@flexirubpolymer.com</a></div>
               <div className="text-[11px] text-slate-500 pt-1">
                 <strong>Global Offices:</strong> Dubai (UAE) • India • Saudi Arabia • United Kingdom

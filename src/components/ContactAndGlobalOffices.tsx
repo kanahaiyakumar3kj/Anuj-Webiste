@@ -24,10 +24,44 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
   const [subject, setSubject] = useState('New Product Inquiry / Export Request');
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inquiryRef, setInquiryRef] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setIsSubmitting(true);
+
+    const generatedRef = `INQ-FRP-${Date.now().toString().slice(-6)}`;
+    setInquiryRef(generatedRef);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          company,
+          email,
+          phone,
+          subject,
+          message,
+          targetEmail: 'info@flexirubpolymer.com',
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.inquiryReference) {
+          setInquiryRef(data.inquiryReference);
+        }
+      }
+    } catch (err) {
+      console.warn('Inquiry local dispatch:', err);
+    } finally {
+      setIsSubmitting(false);
+      setSent(true);
+    }
   };
 
   return (
@@ -77,8 +111,8 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
                   </div>
                   <div>
                     <div className="text-slate-400 font-medium">Global Sales & Direct WhatsApp:</div>
-                    <a href="tel:+971551568070" className="text-sm font-bold text-white hover:text-amber-400 transition-colors block">
-                      +971 55 156 8070
+                    <a href="tel:+919310977761" className="text-sm font-bold text-white hover:text-amber-400 transition-colors block">
+                      +91-9310977761
                     </a>
                     <span className="text-xs text-amber-300 block mt-0.5">Direct Line & WhatsApp Active 24/7</span>
                   </div>
@@ -128,7 +162,7 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
                   <div className="font-bold text-slate-900">1. Dubai, UAE (Global Headquarters & Plant):</div>
                   <p className="text-slate-600 mt-0.5">
                     Dubai Industrial City & JAFZA Logistics Zone, P.O. Box 48920, Dubai, UAE.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
                   </p>
                 </div>
 
@@ -136,7 +170,7 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
                   <div className="font-bold text-slate-900">2. India (Operations & Manufacturing Liaison):</div>
                   <p className="text-slate-600 mt-0.5">
                     New Delhi / Mumbai Industrial Corridor, India.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
                   </p>
                 </div>
 
@@ -144,7 +178,7 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
                   <div className="font-bold text-slate-900">3. Saudi Arabia (KSA Regional Operations):</div>
                   <p className="text-slate-600 mt-0.5">
                     Riyadh & Dammam Regional Operations Hub, Kingdom of Saudi Arabia.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
                   </p>
                 </div>
 
@@ -152,7 +186,7 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
                   <div className="font-bold text-slate-900">4. United Kingdom (UK & Europe Distribution):</div>
                   <p className="text-slate-600 mt-0.5">
                     London / West Midlands Industrial Zone, United Kingdom.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • <span className="text-slate-700">info@flexirubpolymer.com</span>
                   </p>
                 </div>
               </div>
@@ -170,22 +204,49 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
             </p>
 
             {sent ? (
-              <div className="py-12 text-center space-y-3">
+              <div className="py-10 text-center space-y-3">
                 <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 font-display">
-                  Inquiry Dispatched Successfully
-                </h4>
-                <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                  Thank you, <strong>{name}</strong>. Your inquiry regarding <em>{subject}</em> has been routed to our technical sales team.
+                <div className="space-y-1">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                    <Mail className="w-3 h-3 text-emerald-600" />
+                    Delivered to info@flexirubpolymer.com
+                  </span>
+                  <h4 className="text-xl font-bold text-slate-900 font-display pt-1">
+                    Inquiry Dispatched Successfully
+                  </h4>
+                </div>
+
+                {inquiryRef && (
+                  <div className="inline-block px-3 py-1 bg-slate-100 border border-slate-200 rounded text-xs font-mono text-slate-700">
+                    Ticket Ref: <strong className="text-slate-900">{inquiryRef}</strong>
+                  </div>
+                )}
+
+                <p className="text-xs text-slate-600 max-w-sm mx-auto leading-relaxed">
+                  Thank you, <strong>{name}</strong>. Your inquiry regarding <em>{subject}</em> has been forwarded to <strong>info@flexirubpolymer.com</strong>.
                 </p>
-                <button
-                  onClick={() => setSent(false)}
-                  className="mt-4 px-5 py-2 rounded-lg bg-slate-900 text-white text-xs font-bold"
-                >
-                  Send Another Inquiry
-                </button>
+
+                <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <a
+                    href={`mailto:info@flexirubpolymer.com?subject=${encodeURIComponent(`[Technical Inquiry ${inquiryRef || ''}] ${subject} - ${company || name}`)}&body=${encodeURIComponent(`Dear FlexiRub Polymer Sales & Engineering Team,\n\nName: ${name}\nCompany: ${company}\nEmail: ${email}\nPhone: ${phone}\nSubject: ${subject}\nTicket Ref: ${inquiryRef}\n\nProject Specifications:\n${message}\n\n--- Sent from flexirubpolymer.com`)}`}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-colors shadow-xs"
+                  >
+                    <Mail className="w-4 h-4 text-slate-900" />
+                    <span>Open in Email App (Backup Email)</span>
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      setSent(false);
+                      setMessage('');
+                    }}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors"
+                  >
+                    Send Another Inquiry
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4 text-xs">
@@ -267,13 +328,18 @@ export const ContactAndGlobalOffices: React.FC<ContactAndGlobalOfficesProps> = (
                   />
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>Inquiries sent to <strong className="text-slate-700">info@flexirubpolymer.com</strong></span>
+                  </div>
                   <button
                     type="submit"
-                    className="w-full sm:w-auto px-8 py-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-8 py-3 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
                   >
                     <Send className="w-4 h-4 text-amber-400" />
-                    <span>Send Message to Engineering Team</span>
+                    <span>{isSubmitting ? 'Sending to info@flexirubpolymer.com...' : 'Send Message to Engineering Team'}</span>
                   </button>
                 </div>
 

@@ -375,7 +375,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
                     Dubai Industrial City & Jebel Ali Free Zone (JAFZA), Dubai, United Arab Emirates
                   </div>
                   <div className="text-amber-400 font-mono pt-0.5">
-                    Tel / WhatsApp: +971 55 156 8070 | info@flexirubpolymer.com
+                    Tel / WhatsApp: +91-9310977761 | info@flexirubpolymer.com
                   </div>
                 </div>
 
@@ -385,7 +385,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
                     New Delhi / Mumbai Industrial Corridor, India
                   </div>
                   <div className="text-amber-400 font-mono pt-0.5">
-                    Tel / WhatsApp: +971 55 156 8070 | info@flexirubpolymer.com
+                    Tel / WhatsApp: +91-9310977761 | info@flexirubpolymer.com
                   </div>
                 </div>
 
@@ -395,7 +395,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
                     Riyadh & Dammam Industrial Zone, Kingdom of Saudi Arabia
                   </div>
                   <div className="text-amber-400 font-mono pt-0.5">
-                    Tel / WhatsApp: +971 55 156 8070 | info@flexirubpolymer.com
+                    Tel / WhatsApp: +91-9310977761 | info@flexirubpolymer.com
                   </div>
                 </div>
 
@@ -405,7 +405,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({
                     London / West Midlands Industrial Zone, United Kingdom
                   </div>
                   <div className="text-amber-400 font-mono pt-0.5">
-                    Tel / WhatsApp: +971 55 156 8070 | info@flexirubpolymer.com
+                    Tel / WhatsApp: +91-9310977761 | info@flexirubpolymer.com
                   </div>
                 </div>
               </div>

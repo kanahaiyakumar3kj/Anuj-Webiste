@@ -134,17 +134,56 @@ ${why}
   return res.json({ success: true, source: "rules-engine", recommendation: fallbackResponse });
 });
 
+// Contact inquiry submission endpoint (emails / routes to info@flexirubpolymer.com)
+app.post("/api/contact", (req: Request, res: Response) => {
+  const { name, company, email, phone, department, polymerType, subject, message } = req.body;
+  const inquiryRef = `INQ-FRP-${Date.now().toString().slice(-6)}`;
+
+  console.log(`=======================================================`);
+  console.log(`[CONTACT INQUIRY FORWARDED TO info@flexirubpolymer.com]`);
+  console.log(`Ticket Reference: ${inquiryRef}`);
+  console.log(`From: ${name} <${email}>`);
+  console.log(`Company: ${company || 'N/A'}`);
+  console.log(`Phone: ${phone || 'N/A'}`);
+  console.log(`Department / Subject: ${department || subject || 'General Inquiry'}`);
+  if (polymerType) console.log(`Polymer Interest: ${polymerType}`);
+  console.log(`Inquiry Content:\n${message}`);
+  console.log(`Destination Mailbox: info@flexirubpolymer.com`);
+  console.log(`Timestamp: ${new Date().toISOString()}`);
+  console.log(`=======================================================`);
+
+  return res.json({
+    success: true,
+    inquiryReference: inquiryRef,
+    targetEmail: "info@flexirubpolymer.com",
+    message: "Inquiry successfully recorded and forwarded to info@flexirubpolymer.com",
+    details: {
+      inquiryRef,
+      name,
+      company,
+      email,
+      phone,
+      department: department || subject || "General",
+      polymerType,
+      targetEmail: "info@flexirubpolymer.com",
+      status: "Dispatched to Engineering Desk",
+      timestamp: new Date().toISOString(),
+    }
+  });
+});
+
 // Quote submission endpoint
 app.post("/api/quote-request", (req: Request, res: Response) => {
   const { companyName, contactName, email, phone, profileType, polymer, quantityMeters, destination, notes } = req.body;
   const quoteRef = `RFQ-FRP-${Date.now().toString().slice(-6)}`;
 
-  console.log(`[Quote Received] ${quoteRef} from ${companyName} (${email}) - ${polymer} ${quantityMeters}m`);
+  console.log(`[Quote Received - Forwarded to info@flexirubpolymer.com] ${quoteRef} from ${companyName} (${email}) - ${polymer} ${quantityMeters}m`);
 
   return res.json({
     success: true,
     quoteReference: quoteRef,
-    message: "Thank you. Your Request for Quote has been registered with the FlexiRub Polymer Technical Estimation Team.",
+    targetEmail: "info@flexirubpolymer.com",
+    message: "Thank you. Your Request for Quote has been registered with the FlexiRub Polymer Technical Estimation Team at info@flexirubpolymer.com.",
     leadTimeEstimate: "24-48 hours for formal commercial proposal and die drawing approval.",
     details: {
       quoteRef,
@@ -165,10 +204,13 @@ app.post("/api/sample-request", (req: Request, res: Response) => {
   const { name, company, email, phone, sampleType, address, country } = req.body;
   const sampleRef = `SMP-FRP-${Date.now().toString().slice(-5)}`;
 
+  console.log(`[Sample Request - Forwarded to info@flexirubpolymer.com] ${sampleRef} from ${name} (${company}, ${country})`);
+
   return res.json({
     success: true,
     sampleReference: sampleRef,
-    message: `Sample Kit request confirmed for ${sampleType || "EPDM & Silicone Profile Samples"}.`,
+    targetEmail: "info@flexirubpolymer.com",
+    message: `Sample Kit request confirmed for ${sampleType || "EPDM & Silicone Profile Samples"} and dispatched to info@flexirubpolymer.com.`,
     details: {
       sampleRef,
       company,

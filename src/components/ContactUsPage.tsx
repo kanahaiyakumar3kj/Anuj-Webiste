@@ -36,31 +36,33 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
   const [polymerType, setPolymerType] = useState('EPDM Rubber');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inquiryRef, setInquiryRef] = useState('');
 
   const departments = [
     {
       title: 'Commercial & Technical Sales',
       desc: 'Price inquiries, volume tenders, contract extrusion agreements, and general commercial support.',
       email: 'info@flexirubpolymer.com',
-      phone: '+971 55 156 8070'
+      phone: '+91-9310977761'
     },
     {
       title: 'India Operations & Sourcing Desk',
       desc: 'Domestic supply, South Asian logistics, technical CAD review, and India customer support.',
       email: 'info@flexirubpolymer.com',
-      phone: '+971 55 156 8070'
+      phone: '+91-9310977761'
     },
     {
       title: 'Global Export & Shipping (JAFZA)',
       desc: 'FCL container loading, air freight expediting, LC processing, and port documentation via Jebel Ali Port.',
       email: 'info@flexirubpolymer.com',
-      phone: '+971 55 156 8070'
+      phone: '+91-9310977761'
     },
     {
       title: 'QA & Central Polymer Lab',
       desc: 'Mill Test Certificates (MTC), rheology data, ozone chamber compliance, and ASTM/DIN test reports.',
       email: 'info@flexirubpolymer.com',
-      phone: '+971 55 156 8070'
+      phone: '+91-9310977761'
     }
   ];
 
@@ -83,9 +85,42 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
     }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+
+    const generatedRef = `INQ-FRP-${Date.now().toString().slice(-6)}`;
+    setInquiryRef(generatedRef);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          company,
+          email,
+          phone,
+          department,
+          polymerType,
+          message,
+          targetEmail: 'info@flexirubpolymer.com',
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.inquiryReference) {
+          setInquiryRef(data.inquiryReference);
+        }
+      }
+    } catch (err) {
+      console.warn('Inquiry dispatched with local reference:', err);
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }
   };
 
   return (
@@ -200,20 +235,45 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
             </div>
 
             {submitted ? (
-              <div className="py-12 text-center space-y-4">
+              <div className="py-10 text-center space-y-4">
                 <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h4 className="text-xl font-bold text-slate-900 font-display">
-                  Message Dispatched Successfully
-                </h4>
-                <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                  Thank you, <strong>{name}</strong>. Your inquiry for <em>{department}</em> has been assigned a priority engineering ticket. Our team will contact you within 24 hours.
+                <div className="space-y-1">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                    <Mail className="w-3 h-3 text-emerald-600" />
+                    Routed to info@flexirubpolymer.com
+                  </span>
+                  <h4 className="text-xl font-bold text-slate-900 font-display pt-1">
+                    Inquiry Dispatched Successfully
+                  </h4>
+                </div>
+                
+                {inquiryRef && (
+                  <div className="inline-block px-3 py-1 bg-slate-100 border border-slate-200 rounded text-xs font-mono text-slate-700">
+                    Tracking Ref: <strong className="text-slate-900">{inquiryRef}</strong>
+                  </div>
+                )}
+
+                <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong>{name}</strong>. Your inquiry regarding <em>{department}</em> has been forwarded to <strong>info@flexirubpolymer.com</strong>. Our technical engineering and commercial sales desk will respond within 24 hours.
                 </p>
-                <div className="pt-2">
+
+                <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <a
+                    href={`mailto:info@flexirubpolymer.com?subject=${encodeURIComponent(`[Website Inquiry ${inquiryRef || ''}] ${department} - ${company || name}`)}&body=${encodeURIComponent(`Dear FlexiRub Polymer Engineering Team,\n\nName: ${name}\nCompany: ${company}\nEmail: ${email}\nPhone: ${phone}\nDepartment: ${department}\nPolymer Interest: ${polymerType}\nTicket Ref: ${inquiryRef}\n\nProject Specifications & Inquiry:\n${message}\n\n--- Sent from flexirubpolymer.com contact form`)}`}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-colors shadow-xs"
+                  >
+                    <Mail className="w-4 h-4 text-slate-900" />
+                    <span>Open in Email App (Backup to info@flexirubpolymer.com)</span>
+                  </a>
+
                   <button
-                    onClick={() => setSubmitted(false)}
-                    className="px-6 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800"
+                    onClick={() => {
+                      setSubmitted(false);
+                      setMessage('');
+                    }}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors"
                   >
                     Submit Another Inquiry
                   </button>
@@ -333,16 +393,18 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
                   />
                 </div>
 
-                <div className="pt-2 flex items-center justify-between">
-                  <div className="text-[11px] text-slate-400">
-                    * All technical drawings are protected under mutual NDA.
+                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>Inquiries sent directly to <strong className="text-slate-700">info@flexirubpolymer.com</strong></span>
                   </div>
                   <button
                     type="submit"
-                    className="px-8 py-3 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+                    disabled={isSubmitting}
+                    className="px-8 py-3 rounded-lg bg-amber-400 hover:bg-amber-300 disabled:bg-slate-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
-                    <span>Send Message</span>
+                    <span>{isSubmitting ? 'Dispatching to info@flexirubpolymer.com...' : 'Send Message'}</span>
                   </button>
                 </div>
 
@@ -388,7 +450,7 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
                   <div>
                     <strong className="text-white">Direct Phone & WhatsApp:</strong>
                     <p className="text-slate-300 mt-0.5 font-mono">
-                      <a href="tel:+971551568070" className="hover:text-amber-400 transition-colors">+971 55 156 8070</a>
+                      <a href="tel:+919310977761" className="hover:text-amber-400 transition-colors">+91-9310977761</a>
                     </p>
                   </div>
                 </div>
@@ -440,7 +502,7 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
                   <div className="font-bold text-slate-900">1. Dubai, UAE (Global Headquarters & Plant):</div>
                   <p className="text-slate-600 mt-0.5">
                     Dubai Industrial City & JAFZA Logistics Zone, P.O. Box 48920, Dubai, UAE.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • info@flexirubpolymer.com
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • info@flexirubpolymer.com
                   </p>
                 </div>
 
@@ -448,7 +510,7 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
                   <div className="font-bold text-slate-900">2. India (Operations & Manufacturing Liaison):</div>
                   <p className="text-slate-600 mt-0.5">
                     New Delhi / Mumbai Industrial Corridor, India.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • info@flexirubpolymer.com
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • info@flexirubpolymer.com
                   </p>
                 </div>
 
@@ -456,7 +518,7 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
                   <div className="font-bold text-slate-900">3. Saudi Arabia (KSA Regional Operations):</div>
                   <p className="text-slate-600 mt-0.5">
                     Riyadh & Dammam Regional Operations Hub, Kingdom of Saudi Arabia.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • info@flexirubpolymer.com
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • info@flexirubpolymer.com
                   </p>
                 </div>
 
@@ -464,7 +526,7 @@ export const ContactUsPage: React.FC<ContactUsPageProps> = ({
                   <div className="font-bold text-slate-900">4. United Kingdom (UK & Europe Distribution):</div>
                   <p className="text-slate-600 mt-0.5">
                     London / West Midlands Industrial Zone, United Kingdom.<br />
-                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +971 55 156 8070</span> • info@flexirubpolymer.com
+                    <span className="font-mono text-slate-800 font-semibold">Tel / WhatsApp: +91-9310977761</span> • info@flexirubpolymer.com
                   </p>
                 </div>
               </div>

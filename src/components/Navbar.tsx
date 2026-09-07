@@ -113,12 +113,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="hidden sm:inline text-slate-700">|</span>
             
             <a 
-              href="tel:+971551568070" 
+              href="tel:+919310977761" 
               className="flex items-center gap-1.5 text-slate-200 font-semibold hover:text-amber-400 transition-colors"
-              title="Call / WhatsApp: +971 55 156 8070"
+              title="Call / WhatsApp: +91-9310977761"
             >
               <Phone className="w-3.5 h-3.5 text-amber-400" />
-              <span>+971 55 156 8070</span>
+              <span>+91-9310977761</span>
             </a>
 
             <button
